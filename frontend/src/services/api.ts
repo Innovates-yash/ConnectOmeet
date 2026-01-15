@@ -1,5 +1,4 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios'
-import { store } from '../store/store'
 import { logout, refreshAuthToken } from '../store/slices/authSlice'
 
 // Create axios instance
@@ -14,6 +13,8 @@ const api: AxiosInstance = axios.create({
 // Request interceptor to add auth token
 api.interceptors.request.use(
   (config) => {
+    // Import store dynamically to avoid circular dependency
+    const { store } = require('../store/store')
     const token = store.getState().auth.token
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
@@ -35,6 +36,8 @@ api.interceptors.response.use(
       originalRequest._retry = true
 
       try {
+        // Import store dynamically to avoid circular dependency
+        const { store } = require('../store/store')
         await store.dispatch(refreshAuthToken())
         const newToken = store.getState().auth.token
         if (newToken) {
@@ -42,6 +45,8 @@ api.interceptors.response.use(
           return api(originalRequest)
         }
       } catch (refreshError) {
+        // Import store dynamically to avoid circular dependency
+        const { store } = require('../store/store')
         store.dispatch(logout())
         window.location.href = '/auth'
         return Promise.reject(refreshError)

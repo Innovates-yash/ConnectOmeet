@@ -1,22 +1,22 @@
 import { configureStore } from '@reduxjs/toolkit'
 
-import authSlice from './slices/authSlice'
-import profileSlice from './slices/profileSlice'
-import roomSlice from './slices/roomSlice'
-import gameCoinSlice from './slices/gameCoinSlice'
-import compatibilitySlice from './slices/compatibilitySlice'
-import lobbySlice from './slices/lobbySlice'
-import matchmakingSlice from './slices/matchmakingSlice'
+import authReducer from './slices/authSlice'
+import profileReducer from './slices/profileSlice'
+import roomReducer from './slices/roomSlice'
+import gameCoinReducer from './slices/gameCoinSlice'
+import compatibilityReducer from './slices/compatibilitySlice'
+import lobbyReducer from './slices/lobbySlice'
+import matchmakingReducer from './slices/matchmakingSlice'
 
 export const store = configureStore({
   reducer: {
-    auth: authSlice,
-    profile: profileSlice,
-    room: roomSlice,
-    gameCoin: gameCoinSlice,
-    compatibility: compatibilitySlice,
-    lobby: lobbySlice,
-    matchmaking: matchmakingSlice,
+    auth: authReducer,
+    profile: profileReducer,
+    room: roomReducer,
+    gameCoin: gameCoinReducer,
+    compatibility: compatibilityReducer,
+    lobby: lobbyReducer,
+    matchmaking: matchmakingReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
