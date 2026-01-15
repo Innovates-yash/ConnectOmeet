@@ -504,7 +504,7 @@ const FightingGame: React.FC<FightingGameProps> = ({ gameState, onMove }) => {
       {/* Fighter Stats */}
       {gameState_internal.fighters.length === 2 && (
         <div className="w-full max-w-4xl grid grid-cols-2 gap-6">
-          {gameState_internal.fighters.map((fighter, index) => (
+          {gameState_internal.fighters.map((fighter) => (
             <div key={fighter.id} className="bg-black/20 border border-purple-500/30 rounded-lg p-4">
               <h4 className="text-lg font-bold text-white mb-2 text-center">{fighter.name}</h4>
               <div className="space-y-2">

@@ -123,7 +123,7 @@ const SimpleLandingPage: React.FC = () => {
           </h2>
           
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-            {games.map((game, index) => (
+            {games.map((game) => (
               <div
                 key={game.name}
                 className="bg-gray-800/50 backdrop-blur-sm border border-cyber-primary/20 rounded-xl p-6 text-center hover:border-cyber-primary/50 hover:bg-gray-800/70 transition-all duration-300 cursor-pointer group"
@@ -147,7 +147,7 @@ const SimpleLandingPage: React.FC = () => {
           </h2>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {features.map((feature, index) => (
+            {features.map((feature) => (
               <div
                 key={feature.title}
                 className="bg-gray-800/30 backdrop-blur-sm border border-cyber-primary/20 rounded-xl p-8 hover:border-cyber-primary/50 hover:bg-gray-800/50 transition-all duration-300"
