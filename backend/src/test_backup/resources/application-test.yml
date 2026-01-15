@@ -1,0 +1,76 @@
+# Test configuration for GameVerse Backend
+# Uses H2 in-memory database for testing
+
+spring:
+  application:
+    name: gameverse-backend-test
+  
+  # Test Database Configuration (H2 in-memory)
+  datasource:
+    url: jdbc:h2:mem:gameverse_test;DB_CLOSE_DELAY=-1;MODE=MySQL
+    username: sa
+    password: 
+    driver-class-name: org.h2.Driver
+    
+  # JPA Configuration for Testing
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: false
+    open-in-view: false
+    
+  # Disable Jackson timestamp formatting for consistent testing
+  jackson:
+    default-property-inclusion: NON_NULL
+    serialization:
+      write-dates-as-timestamps: false
+
+# Logging Configuration for Tests
+logging:
+  level:
+    com.gameverse: INFO
+    org.springframework.security: WARN
+    org.springframework.web.socket: WARN
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# GameVerse Test Configuration
+gameverse:
+  # JWT Configuration for Testing
+  jwt:
+    secret: "test-secret-key-for-jwt-tokens-in-testing-environment-only"
+    expiration: 3600000 # 1 hour for testing
+    
+  # OTP Configuration for Testing
+  otp:
+    expiration: 300000 # 5 minutes
+    max-attempts: 3
+    default-code: "1234" # Always use default in tests
+    
+  # Game Configuration for Testing
+  games:
+    max-concurrent-sessions: 10
+    session-timeout: 300000 # 5 minutes for faster tests
+    
+  # Room Configuration for Testing
+  rooms:
+    max-capacity: 5 # Smaller capacity for testing
+    cleanup-interval: 60000 # 1 minute
+    
+  # Virtual Currency for Testing
+  currency:
+    initial-balance: 100.00 # Smaller amounts for testing
+    daily-bonus: 10.00
+
+# Disable CORS for testing
+cors:
+  allowed-origins: "*"
+  allowed-methods: "*"
+  allowed-headers: "*"
+  allow-credentials: true
