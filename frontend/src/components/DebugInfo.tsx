@@ -6,7 +6,10 @@ const DebugInfo: React.FC = () => {
   const auth = useSelector((state: RootState) => state.auth)
   const profile = useSelector((state: RootState) => state.profile)
 
-  if (process.env.NODE_ENV !== 'development') {
+  // Check Vite environment variables
+  const isDevelopment = import.meta.env.DEV || import.meta.env.MODE === 'development'
+
+  if (!isDevelopment) {
     return null
   }
 

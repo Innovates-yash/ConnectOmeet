@@ -10,6 +10,8 @@ export interface AuthState {
   otpSent: boolean
   otpLoading: boolean
   error: string | null
+  hasProfile: boolean
+  isNewUser: boolean
 }
 
 const initialState: AuthState = {
@@ -21,6 +23,8 @@ const initialState: AuthState = {
   otpSent: false,
   otpLoading: false,
   error: null,
+  hasProfile: false,
+  isNewUser: false,
 }
 
 // Async thunks
@@ -45,9 +49,10 @@ export const verifyOtp = createAsyncThunk(
   async ({ phoneNumber, otp }: { phoneNumber: string; otp: string }, { rejectWithValue }) => {
     try {
       const response = await authApi.verifyOtp(phoneNumber, otp)
-      return response.data
+      // Backend returns { success, message, data: { accessToken, refreshToken, ... } }
+      return response.data.data
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Invalid OTP')
+      return rejectWithValue(error.response?.data?.error || error.response?.data?.message || 'Invalid OTP')
     }
   }
 )
@@ -114,9 +119,11 @@ const authSlice = createSlice({
       .addCase(verifyOtp.fulfilled, (state, action) => {
         state.isLoading = false
         state.isAuthenticated = true
-        state.token = action.payload.token
+        state.token = action.payload.accessToken
         state.refreshToken = action.payload.refreshToken
-        localStorage.setItem('token', action.payload.token)
+        state.hasProfile = action.payload.user?.hasProfile || false
+        state.isNewUser = action.payload.isNewUser || false
+        localStorage.setItem('token', action.payload.accessToken)
         localStorage.setItem('refreshToken', action.payload.refreshToken)
       })
       .addCase(verifyOtp.rejected, (state, action) => {
@@ -126,9 +133,9 @@ const authSlice = createSlice({
       
       // Refresh Token
       .addCase(refreshAuthToken.fulfilled, (state, action) => {
-        state.token = action.payload.token
+        state.token = action.payload.accessToken
         state.refreshToken = action.payload.refreshToken
-        localStorage.setItem('token', action.payload.token)
+        localStorage.setItem('token', action.payload.accessToken)
         localStorage.setItem('refreshToken', action.payload.refreshToken)
       })
       .addCase(refreshAuthToken.rejected, (state) => {

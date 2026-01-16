@@ -18,16 +18,7 @@ import LoadingSpinner from './components/common/LoadingSpinner'
 import DebugInfo from './components/DebugInfo'
 
 function App(): JSX.Element {
-  const { isAuthenticated, isLoading } = useSelector((state: RootState) => state.auth)
-  const { profile } = useSelector((state: RootState) => state.profile)
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-cyber-dark">
-        <LoadingSpinner size="large" />
-      </div>
-    )
-  }
+  const { isAuthenticated, hasProfile } = useSelector((state: RootState) => state.auth)
 
   return (
     <SessionManager>
@@ -44,7 +35,7 @@ function App(): JSX.Element {
               !isAuthenticated ? (
                 <AuthPage />
               ) : (
-                <Navigate to={profile ? "/dashboard" : "/profile-setup"} replace />
+                <Navigate to={hasProfile ? "/dashboard" : "/profile-setup"} replace />
               )
             } 
           />
@@ -54,7 +45,7 @@ function App(): JSX.Element {
             path="/profile-setup" 
             element={
               <ProtectedRoute>
-                {!profile ? (
+                {!hasProfile ? (
                   <ProfileSetupPage />
                 ) : (
                   <Navigate to="/dashboard" replace />

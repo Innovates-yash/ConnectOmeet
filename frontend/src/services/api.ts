@@ -11,13 +11,19 @@ const api: AxiosInstance = axios.create({
 })
 
 // Request interceptor to add auth token
+let storeInstance: any = null;
+
+export const setStoreInstance = (store: any) => {
+  storeInstance = store;
+};
+
 api.interceptors.request.use(
   (config) => {
-    // Import store dynamically to avoid circular dependency
-    const { store } = require('../store/store')
-    const token = store.getState().auth.token
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
+    if (storeInstance) {
+      const token = storeInstance.getState().auth.token
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`
+      }
     }
     return config
   },
@@ -36,19 +42,19 @@ api.interceptors.response.use(
       originalRequest._retry = true
 
       try {
-        // Import store dynamically to avoid circular dependency
-        const { store } = require('../store/store')
-        await store.dispatch(refreshAuthToken())
-        const newToken = store.getState().auth.token
-        if (newToken) {
-          originalRequest.headers.Authorization = `Bearer ${newToken}`
-          return api(originalRequest)
+        if (storeInstance) {
+          await storeInstance.dispatch(refreshAuthToken())
+          const newToken = storeInstance.getState().auth.token
+          if (newToken) {
+            originalRequest.headers.Authorization = `Bearer ${newToken}`
+            return api(originalRequest)
+          }
         }
       } catch (refreshError) {
-        // Import store dynamically to avoid circular dependency
-        const { store } = require('../store/store')
-        store.dispatch(logout())
-        window.location.href = '/auth'
+        if (storeInstance) {
+          storeInstance.dispatch(logout())
+          window.location.href = '/auth'
+        }
         return Promise.reject(refreshError)
       }
     }
@@ -63,7 +69,7 @@ export const authApi = {
     api.post('/auth/send-otp', { phoneNumber }),
   
   verifyOtp: (phoneNumber: string, otp: string): Promise<AxiosResponse> =>
-    api.post('/auth/verify-otp', { phoneNumber, otp }),
+    api.post('/auth/verify-otp', { phoneNumber, otpCode: otp }),
   
   refreshToken: (refreshToken: string): Promise<AxiosResponse> =>
     api.post('/auth/refresh', { refreshToken }),
@@ -72,22 +78,22 @@ export const authApi = {
 // Profile API
 export const profileApi = {
   createProfile: (profileData: any): Promise<AxiosResponse> =>
-    api.post('/v1/profile/create', profileData),
+    api.post('/profile/create', profileData),
   
   getProfile: (): Promise<AxiosResponse> =>
-    api.get('/v1/profile/me'),
+    api.get('/profile/me'),
   
   updateProfile: (profileData: any): Promise<AxiosResponse> =>
-    api.put('/v1/profile/update', profileData),
+    api.put('/profile/update', profileData),
   
   searchProfiles: (query: string): Promise<AxiosResponse> =>
-    api.get(`/v1/profile/search?q=${encodeURIComponent(query)}`),
+    api.get(`/profile/search?q=${encodeURIComponent(query)}`),
 
   getAvailableAvatars: (): Promise<AxiosResponse> =>
-    api.get('/v1/profile/avatars'),
+    api.get('/profile/avatars'),
 
   getAvailableInterestTags: (): Promise<AxiosResponse> =>
-    api.get('/v1/profile/interest-tags'),
+    api.get('/profile/interest-tags'),
 }
 
 // Room API

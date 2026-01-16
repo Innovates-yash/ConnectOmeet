@@ -10,14 +10,15 @@ import { Phone, Shield, ArrowRight, Loader2 } from 'lucide-react'
 import { RootState, AppDispatch } from '../store/store'
 import { sendOtp, verifyOtp, clearError } from '../store/slices/authSlice'
 import LoadingSpinner from '../components/common/LoadingSpinner'
+import CountryCodeSelector from '../components/auth/CountryCodeSelector'
+import { Country, formatToE164, validatePhoneNumber } from '../utils/countries'
 
 // Validation schemas
 const phoneSchema = z.object({
   phoneNumber: z
     .string()
-    .min(10, 'Phone number must be at least 10 digits')
-    .max(15, 'Phone number must be at most 15 digits')
-    .regex(/^\+?[1-9]\d{1,14}$/, 'Please enter a valid phone number')
+    .min(1, 'Phone number is required')
+    .regex(/^\d+$/, 'Phone number must contain only digits')
 })
 
 const otpSchema = z.object({
@@ -33,13 +34,19 @@ type OtpFormData = z.infer<typeof otpSchema>
 const AuthPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
-  const { isAuthenticated, isLoading, otpSent, otpLoading, phoneNumber, error } = useSelector(
+  const { isAuthenticated, isLoading, otpSent, otpLoading, phoneNumber, error, hasProfile } = useSelector(
     (state: RootState) => state.auth
   )
-  const { profile } = useSelector((state: RootState) => state.profile)
 
   const [step, setStep] = useState<'phone' | 'otp'>('phone')
   const [countdown, setCountdown] = useState(0)
+  const [selectedCountry, setSelectedCountry] = useState<Country>({
+    code: "IN",
+    name: "India",
+    dialCode: "+91",
+    flag: "🇮🇳"
+  })
+  const [phoneValidationError, setPhoneValidationError] = useState<string | null>(null)
 
   // Phone form
   const phoneForm = useForm<PhoneFormData>({
@@ -60,9 +67,9 @@ const AuthPage: React.FC = () => {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      navigate(profile ? '/dashboard' : '/profile-setup')
+      navigate(hasProfile ? '/dashboard' : '/profile-setup')
     }
-  }, [isAuthenticated, profile, navigate])
+  }, [isAuthenticated, hasProfile, navigate])
 
   // Handle OTP sent state
   useEffect(() => {
@@ -90,8 +97,20 @@ const AuthPage: React.FC = () => {
   }, [error, dispatch])
 
   const handlePhoneSubmit = async (data: PhoneFormData) => {
+    // Validate phone number for selected country
+    const validationError = validatePhoneNumber(selectedCountry.dialCode, data.phoneNumber);
+    if (validationError) {
+      setPhoneValidationError(validationError);
+      return;
+    }
+    
+    setPhoneValidationError(null);
+    
+    // Format to E.164
+    const fullPhoneNumber = formatToE164(selectedCountry.dialCode, data.phoneNumber);
+    
     try {
-      await dispatch(sendOtp(data.phoneNumber)).unwrap()
+      await dispatch(sendOtp(fullPhoneNumber)).unwrap()
     } catch (error) {
       // Error is handled by the error effect above
     }
@@ -126,6 +145,12 @@ const AuthPage: React.FC = () => {
     setCountdown(0)
     otpForm.reset()
     phoneForm.reset()
+    setPhoneValidationError(null)
+  }
+
+  const handleCountryChange = (country: Country) => {
+    setSelectedCountry(country)
+    setPhoneValidationError(null)
   }
 
   const formatCountdown = (seconds: number) => {
@@ -170,17 +195,28 @@ const AuthPage: React.FC = () => {
                 <Phone className="inline w-4 h-4 mr-2" />
                 Phone Number
               </label>
-              <input
-                {...phoneForm.register('phoneNumber')}
-                id="phoneNumber"
-                type="tel"
-                placeholder="+1 (555) 123-4567"
-                className="input-cyber"
-                disabled={otpLoading}
-              />
-              {phoneForm.formState.errors.phoneNumber && (
+              <div className="flex gap-2">
+                <CountryCodeSelector
+                  value={selectedCountry.dialCode}
+                  onChange={handleCountryChange}
+                  disabled={otpLoading}
+                />
+                <input
+                  {...phoneForm.register('phoneNumber')}
+                  id="phoneNumber"
+                  type="tel"
+                  placeholder="9876543210"
+                  className="input-cyber flex-1"
+                  disabled={otpLoading}
+                  onChange={(e) => {
+                    phoneForm.register('phoneNumber').onChange(e);
+                    setPhoneValidationError(null);
+                  }}
+                />
+              </div>
+              {(phoneForm.formState.errors.phoneNumber || phoneValidationError) && (
                 <p className="mt-1 text-sm text-red-400">
-                  {phoneForm.formState.errors.phoneNumber.message}
+                  {phoneForm.formState.errors.phoneNumber?.message || phoneValidationError}
                 </p>
               )}
             </div>

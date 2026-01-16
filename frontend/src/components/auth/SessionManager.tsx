@@ -17,17 +17,19 @@ const SessionManager: React.FC<{ children: React.ReactNode }> = ({ children }) =
     if (!isAuthenticated || !token) return
 
     try {
-      dispatch(setLoading(true))
-      
       // Fetch user profile if authenticated but no profile loaded
-      if (!profile) {
-        await dispatch(fetchProfile()).unwrap()
+      // Only fetch if we don't know the profile status yet
+      if (profile === null) {
+        try {
+          await dispatch(fetchProfile()).unwrap()
+        } catch (error) {
+          // Profile fetch failed - user might not have a profile yet
+          // This is okay, they'll be redirected to profile setup
+          console.log('No profile found or error fetching profile:', error)
+        }
       }
     } catch (error) {
       console.error('Failed to initialize session:', error)
-      // Don't logout on profile fetch failure - user might not have a profile yet
-    } finally {
-      dispatch(setLoading(false))
     }
   }, [dispatch, isAuthenticated, token, profile])
 

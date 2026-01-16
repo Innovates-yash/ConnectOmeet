@@ -17,12 +17,12 @@ A full-stack social gaming platform featuring 10 multiplayer games, real-time ma
 - 🧮 **Math Master** - Educational math game (2-6 players)
 
 ### Platform Features
-- 🔐 **Phone-based Authentication** - Secure OTP login
+- 🔐 **Phone-based Authentication** - Secure OTP login with country code selector
 - 👥 **Social Gaming** - Friend system, chat, and social rooms
 - 🏆 **Matchmaking** - Skill-based and quick match options
 - 💰 **Virtual Currency** - GameCoins system with transactions
 - 🎯 **Compatibility System** - Find compatible gaming partners
-- 📊 **User Profiles** - Customizable profiles with stats
+- 📊 **User Profiles** - Customizable profiles with 24 avatar options
 - 💬 **Real-time Chat** - WebSocket-based messaging
 - 🎮 **Private Lobbies** - Create and join private game rooms
 
@@ -38,7 +38,6 @@ A full-stack social gaming platform featuring 10 multiplayer games, real-time ma
 - **Lucide React** - Icons
 - **React Hook Form + Zod** - Form validation
 - **React Hot Toast** - Notifications
-- **Vitest** - Testing framework
 
 ### Backend
 - **Spring Boot 3.2.1** - Java framework
@@ -50,48 +49,6 @@ A full-stack social gaming platform featuring 10 multiplayer games, real-time ma
 - **JWT** - Token-based auth
 - **Maven** - Build tool
 
-### Database
-- **MySQL 8.0** - Primary database
-- **Flyway** - Database migrations
-- 13 tables with proper relationships
-
-## 📁 Project Structure
-
-```
-ConnectOMeet/
-├── frontend/                 # React frontend application
-│   ├── src/
-│   │   ├── components/      # Reusable UI components
-│   │   ├── pages/           # Page components
-│   │   ├── store/           # Redux store and slices
-│   │   ├── hooks/           # Custom React hooks
-│   │   ├── services/        # API services
-│   │   ├── utils/           # Utility functions
-│   │   └── __tests__/       # Test files
-│   ├── package.json
-│   └── vite.config.ts
-│
-├── backend/                  # Spring Boot backend
-│   ├── src/main/java/com/gameverse/
-│   │   ├── controller/      # REST & WebSocket controllers
-│   │   ├── service/         # Business logic
-│   │   ├── repository/      # Data access layer
-│   │   ├── entity/          # JPA entities
-│   │   ├── config/          # Configuration classes
-│   │   └── dto/             # Data transfer objects
-│   ├── src/main/resources/
-│   │   └── application.yml  # Application configuration
-│   └── pom.xml
-│
-├── database/                 # Database scripts
-│   ├── schema.sql           # Complete schema
-│   ├── migrations/          # Flyway migrations
-│   └── seed_data.sql        # Sample data
-│
-└── .kiro/                    # Kiro specs and documentation
-    └── specs/
-```
-
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -99,35 +56,19 @@ ConnectOMeet/
 - **Java** 17+ (Java 25 recommended)
 - **Maven** 3.8+
 - **MySQL** 8.0+
-- **Git**
 
-### Database Setup
+### Quick Start
 
-1. Install MySQL 8.0 and start the service
-
-2. Create the database:
-```sql
+1. **Setup Database**
+```bash
+mysql -u root -p
 CREATE DATABASE gameverse_db;
+USE gameverse_db;
+SOURCE database/schema.sql;
 ```
 
-3. Run the schema:
-```bash
-mysql -u root -p gameverse_db < database/schema.sql
-```
-
-4. (Optional) Load seed data:
-```bash
-mysql -u root -p gameverse_db < database/seed_data.sql
-```
-
-### Backend Setup
-
-1. Navigate to backend directory:
-```bash
-cd backend
-```
-
-2. Update `src/main/resources/application.yml` with your MySQL credentials:
+2. **Configure Backend**
+Update `backend/src/main/resources/application.yml`:
 ```yaml
 spring:
   datasource:
@@ -136,192 +77,129 @@ spring:
     password: your_password
 ```
 
-3. Build and run:
-```bash
-mvn clean install
-mvn spring-boot:run
-```
-
-Backend will start on: **http://localhost:8080**
-
-### Frontend Setup
-
-1. Navigate to frontend directory:
-```bash
-cd frontend
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Start development server:
-```bash
-npm run dev
-```
-
-Frontend will start on: **http://localhost:3000**
-
-## 🎯 Quick Start Scripts
-
-### Windows
-```bash
-# Start everything
-start-all.cmd
-
-# Start backend only
-start-backend.cmd
-
-# Start frontend only
-start-frontend.cmd
-
-# Check status
-check-status.cmd
-```
-
-## 🔑 API Endpoints
-
-### Authentication
-- `POST /api/v1/auth/send-otp` - Send OTP to phone
-- `POST /api/v1/auth/verify-otp` - Verify OTP and login
-- `POST /api/v1/auth/logout` - Logout user
-
-### User Profile
-- `GET /api/v1/profile` - Get user profile
-- `POST /api/v1/profile` - Create/update profile
-- `PUT /api/v1/profile` - Update profile
-
-### Matchmaking
-- `POST /api/v1/matchmaking/join` - Join matchmaking queue
-- `POST /api/v1/matchmaking/leave` - Leave queue
-- `GET /api/v1/matchmaking/status` - Get queue status
-
-### Game Sessions
-- `POST /api/v1/game-sessions` - Create game session
-- `GET /api/v1/game-sessions/{id}` - Get session details
-- `POST /api/v1/game-sessions/{id}/join` - Join session
-- `POST /api/v1/game-sessions/{id}/leave` - Leave session
-
-### GameCoins
-- `GET /api/v1/gamecoins/balance` - Get balance
-- `POST /api/v1/gamecoins/transfer` - Transfer coins
-- `GET /api/v1/gamecoins/transactions` - Get transaction history
-
-### Social Features
-- `GET /api/v1/rooms` - List public rooms
-- `POST /api/v1/rooms` - Create room
-- `GET /api/v1/friends` - Get friends list
-- `POST /api/v1/friends/request` - Send friend request
-
-## 🧪 Testing
-
-### Frontend Tests
-```bash
-cd frontend
-npm test                    # Run all tests
-npm run test:coverage      # Run with coverage
-```
-
-### Backend Tests
+3. **Start Backend**
 ```bash
 cd backend
-mvn test                   # Run all tests
-mvn verify                 # Run tests with integration tests
+mvn spring-boot:run
+```
+Backend runs on: **http://localhost:8080**
+
+4. **Start Frontend**
+```bash
+cd frontend
+npm install
+npm run dev
+```
+Frontend runs on: **http://localhost:3000**
+
+### Windows Quick Start
+```bash
+start-all.cmd          # Start both servers
+start-backend.cmd      # Backend only
+start-frontend.cmd     # Frontend only
+check-status.cmd       # Check if running
 ```
 
-## 🔐 Authentication Flow
+## 🔑 Authentication
 
-1. User enters phone number
-2. Backend sends OTP (dev mode: always "1234")
-3. User enters OTP
-4. Backend verifies and issues JWT token
-5. Token stored in Redux and used for API calls
+### OTP Login Flow
+1. Select country code (India +91 default)
+2. Enter phone number
+3. Receive OTP (Dev mode: use "1234")
+4. Verify and login
+5. Complete profile setup (first time users)
 
 **Dev Mode**: Any phone number works with OTP "1234"
 
 ## 🎨 Design System
 
 ### Cyberpunk Theme
-- **Primary Color**: Cyan (#00ffff)
-- **Secondary Color**: Magenta (#ff00ff)
-- **Accent Color**: Yellow (#ffff00)
+- **Primary**: Cyan (#00ffff)
+- **Secondary**: Magenta (#ff00ff)
+- **Accent**: Yellow (#ffff00)
 - **Background**: Dark (#0a0a0a)
 
-### Custom Components
-- Neon glow effects
-- Glass morphism cards
-- Animated gradients
-- Custom scrollbars
-- Cyberpunk grid backgrounds
+Features neon glow effects, glass morphism, and animated gradients.
 
-## 📊 Database Schema
+## 📊 Key API Endpoints
 
-13 tables including:
-- `users` - User accounts
-- `user_profiles` - Extended profile info
-- `game_sessions` - Active game sessions
-- `game_participants` - Session participants
-- `game_coin_transactions` - Currency transactions
-- `chat_messages` - Chat history
-- `rooms` - Social rooms
-- `friendships` - Friend relationships
-- And more...
+### Authentication
+- `POST /api/v1/auth/send-otp` - Send OTP
+- `POST /api/v1/auth/verify-otp` - Verify & login
 
-## 🚀 Deployment
+### Profile
+- `GET /api/v1/profile/me` - Get profile
+- `POST /api/v1/profile/create` - Create profile
+- `GET /api/v1/profile/avatars` - Get available avatars
 
-### Frontend (Vercel/Netlify)
-```bash
-cd frontend
-npm run build
-# Deploy dist/ folder
+### Matchmaking
+- `POST /api/v1/matchmaking/join` - Join queue
+- `GET /api/v1/matchmaking/status` - Queue status
+
+### GameCoins
+- `GET /api/v1/gamecoins/balance` - Get balance
+- `GET /api/v1/gamecoins/transactions` - Transaction history
+
+## 📁 Project Structure
+
+```
+ConnectOMeet/
+├── frontend/              # React app
+│   ├── src/
+│   │   ├── components/   # UI components
+│   │   ├── pages/        # Page components
+│   │   ├── store/        # Redux store
+│   │   ├── services/     # API services
+│   │   └── utils/        # Utilities
+│   └── package.json
+│
+├── backend/              # Spring Boot app
+│   ├── src/main/java/com/gameverse/
+│   │   ├── controller/  # REST controllers
+│   │   ├── service/     # Business logic
+│   │   ├── repository/  # Data access
+│   │   └── entity/      # JPA entities
+│   └── pom.xml
+│
+└── database/            # SQL scripts
+    ├── schema.sql
+    └── migrations/
 ```
 
-### Backend (Heroku/AWS)
-```bash
-cd backend
-mvn clean package
-# Deploy target/*.jar
-```
+## 🔐 Security Features
+
+- JWT token-based authentication
+- Phone number verification via OTP
+- Secure password-less login
+- Token refresh mechanism
+- Protected API endpoints
 
 ## 📝 Documentation
 
-- [Backend Verification Report](BACKEND-VERIFICATION-COMPLETE.md)
-- [Backend Analysis](BACKEND-ANALYSIS-REPORT.md)
-- [API Endpoints Reference](BACKEND-ENDPOINTS-QUICK-REFERENCE.md)
-- [Frontend Status](FRONTEND-STATUS.md)
-- [Endpoint Tests](backend-endpoint-tests.md)
+See the `docs/` folder for:
+- API documentation
+- Database schema
+- Setup guides
+- Architecture diagrams
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+2. Create feature branch (`git checkout -b feature/name`)
+3. Commit changes (`git commit -m 'Add feature'`)
+4. Push to branch (`git push origin feature/name`)
+5. Open Pull Request
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+MIT License - see LICENSE file for details
 
-## 👥 Authors
+## 👥 Author
 
-- **Yash Gupta** - Initial work
-
-## 🙏 Acknowledgments
-
-- Built with Spring Boot and React
-- Cyberpunk design inspired by modern gaming aesthetics
-- Property-based testing methodology for robust code quality
-
-## 📞 Support
-
-For issues and questions:
-- Create an issue on GitHub
-- Contact: [Your Email]
+**Yash Gupta**
 
 ---
 
-**Status**: ✅ Fully Operational
-**Version**: 1.0.0
+**Status**: ✅ Production Ready  
+**Version**: 1.0.0  
 **Last Updated**: January 2026

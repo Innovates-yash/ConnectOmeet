@@ -1,4 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit'
+import { setStoreInstance } from '../services/api'
 
 import authReducer from './slices/authSlice'
 import profileReducer from './slices/profileSlice'
@@ -25,6 +26,9 @@ export const store = configureStore({
       },
     }),
 })
+
+// Set store instance for API interceptors
+setStoreInstance(store)
 
 export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch
