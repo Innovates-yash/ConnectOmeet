@@ -28,10 +28,14 @@ export const sendOtp = createAsyncThunk(
   'auth/sendOtp',
   async (phoneNumber: string, { rejectWithValue }) => {
     try {
-      await authApi.sendOtp(phoneNumber)
+      console.log('Sending OTP to:', phoneNumber)
+      const response = await authApi.sendOtp(phoneNumber)
+      console.log('OTP Response:', response.data)
       return phoneNumber
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to send OTP')
+      console.error('OTP Error:', error)
+      console.error('Error response:', error.response)
+      return rejectWithValue(error.response?.data?.message || error.message || 'Failed to send OTP')
     }
   }
 )
