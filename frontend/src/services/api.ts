@@ -3,7 +3,7 @@ import { logout, refreshAuthToken } from '../store/slices/authSlice'
 
 // Create axios instance
 const api: AxiosInstance = axios.create({
-  baseURL: '/api',
+  baseURL: '/api/v1',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
